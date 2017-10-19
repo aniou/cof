@@ -1,0 +1,14 @@
+# meta prog:/bin/df
+#
+Filesystem                    1024-blocks      Used Available Capacity Mounted
+udev                              1837416         0   1837416        0 /dev
+tmpfs                              371560      5956    365604        2 /run
+/dev/sdx3                        19554584  10289968   8248248       56 /
+tmpfs                             1857800     56916   1800884        4 /dev/shm
+tmpfs                                5120         4      5116        1 /run/lock
+tmpfs                             1857800         0   1857800        0 /sys/fs/cgroup
+/dev/sdx2                       123723748  10807024 112900340        9 /rr/rrr
+1.2.3.4:/foobar2/test1          956688640 740075264 216510976       78 /rr/test1
+1.2.3.4:/foobar2/test2          956688640 740075264 216510976       78 /rr/test2
+1.2.3.4:/foobar2/test9          956688640 740075264 216510976       78 /rr/test9
+tmpfs                              371560        36    371524        1 /run/user/3000

@@ -1,0 +1,6 @@
+# meta prog:/usr/sbin/arp ver:2
+#
+Host  IPv4        MAC                Interface
+-     1.2.3.2     00:11:32:cc:aa:bb  wm0
+-     1.2.3.1     aa:aa:bb:20:1a:cb  wm0
+-     1.2.3.91    44:8a:5b:aa:aa:aa  wm0
