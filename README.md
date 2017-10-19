@@ -16,14 +16,14 @@ Installation instructions (NetBSD 8)
 Usage
 -----
  
-    $ cat df.txt | ./sel 1,2,Used,Used where Used -eq 0
+    $ cat sample/df.txt | ./sel 1,2,Used,Used where Used -eq 0
     # meta prog:/bin/df
     #
     Filesystem 1024-blocks Used Used      
     udev       1837416     0    0         
     tmpfs      1857800     0    0         
     
-    $ cat df.txt | ./sel -f 1,2,Used,Used -w Used -gt 0
+    $ cat sample/df.txt | ./sel -f 1,2,Used,Used -w Used -gt 0
     # meta prog:/bin/df
     #
     Filesystem             1024-blocks Used      Used      
@@ -38,7 +38,7 @@ Usage
     tmpfs                  371560      36        36       
     
     
-    $ cat df.txt | ./sel -f 1,2,Used,Used,Mounted -w Used -gt 0 -a Mounted -starts /rr
+    $ cat sample/df.txt | ./sel -f 1,2,Used,Used,Mounted -w Used -gt 0 -a Mounted -starts /rr
     # meta prog:/bin/df
     #
     Filesystem             1024-blocks Used      Used      Mounted   
