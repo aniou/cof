@@ -1,0 +1,300 @@
+#!/usr/bin/python3 -tt
+
+"""
+WARNING
+
+This is kind of sketch created for quick testing and prototyping.
+Code is not suitable for production use and may lead to womit and
+squint. 
+
+Don't look below.  
+This is your last warning. 
+"""
+
+
+
+
+import sys
+import fileinput
+import parsimonious 
+import six
+from parsimonious.grammar import Grammar
+from datetime import datetime, date
+import getopt
+import os
+from termcolor import colored, cprint
+
+#
+quiet = False       # don't show headers nor comments
+header = {}         # maps headers to positions
+colsize = []        # column size (calculated from longest value)
+output = []         # output lines (arrays)
+cols   = []
+
+ParserEvalError = parsimonious.exceptions.VisitationError
+
+
+
+def usage():
+    name = os.path.basename(sys.argv[0])
+    print("Usage: {0} [-qh] [<column>, [<column>, ...]] [where <filter>]".format(name))
+    return
+
+# see http://docopt.org/
+# too many tricks to work over python deficiences in getopt/argv
+def get_and_set_options():
+    tmp_arg = ' '.join(sys.argv[1:]).replace(', ', ',')
+    tmp = []
+    cols = []
+    quiet = False
+    #print(tmp_arg)
+
+    try:
+        opts, args = getopt.getopt(tmp_arg.split(), "hqf:w", ["help"])
+    except getopt.GetoptError as err:
+        print(err)  # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    output = None
+    quiet = False
+    #print(opts,':',args)
+    for o, a in opts:
+        #print(o,a)
+        if o == '-q':
+            quiet = True
+        elif o == '-f':
+            # python's limitation
+            # sel -q -f 1,2, 3, 2 -w Used -gt 1
+            # is parsed to [('-q', ''), ('-f', '1,2,')] : ['3,', '2', '-w', 'Used', '-gt', '1']
+            cols = [x for x in a.split(',') if x!='']
+            #print(cols)
+        elif o == '-w':
+            tmp = ['where']
+            pass
+        elif o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        else:
+            assert False, "unhandled option"
+
+    return(quiet, cols, tmp + args)
+
+
+##############################
+GRAMMAR=r""" # Test grammar
+expr = space or space
+or = and   more_or
+more_or = ( space "-o" space and )*
+and = term  more_and
+more_and = ( space "-a" space term )*
+term = not / value
+not = "NOT" space value
+value =  compare / bracketed / name
+bracketed = "[" space expr space "]"
+compare = contains / starts / ends / equals / smaller / smaller_equal/ bigger/ bigger_equal
+contains  =  name space "-has"  space literal
+starts  =  name space "-starts"  space literal
+ends  =  name space "-ends"  space literal
+equals =  name space "-eq"  space any_literal
+smaller =  name space "-lt"  space numeric_literal
+bigger =  name space "-gt"  space numeric_literal
+smaller_equal =  name space "-le"  space numeric_literal
+bigger_equal =  name space "-ge"  space numeric_literal
+name       = ~"[a-zA-Z\-_]+"
+numeric_literal = date / number
+any_literal = date / number / literal
+literal    = ~"[a-zA-Z0-9/:]+"
+number =  ~"\d+[kKmMgG%]?"
+date = ~"\d{4}-\d{1,2}-\d{1,2}(:?\ \d{1,4}:\d{1,2})?"
+space    = " "*
+chars = ~"[^\"]*"
+"""
+
+
+# cargo-culted from
+# http://zderadicka.eu/writing-simple-parser-in-python/
+# https://github.com/izderadicka/imap_detach/blob/master/src/imap_detach/expressions.py
+class SimpleEvaluator(parsimonious.NodeVisitor):
+    def __init__(self, ctx, strict=True):
+        self.grammar=Grammar(GRAMMAR)
+        self._ctx=ctx
+        self._strict=strict
+    
+    def visit_name(self, node, chidren):
+        if node.text in self._ctx :
+            val=self._ctx[node.text]
+            if isinstance(val, (six.string_types)+ (six.binary_type,)) :
+                #val = six.decode(val).lower()
+                val = val.lower()
+            return val
+        elif self._strict:
+            raise EvalError('Unknown variable %s'%node.text, node.start)
+        else:
+            return ''
+    
+    def visit_literal(self,node, children):
+#        #return decode(children[1]).lower()
+        return node.text.lower()
+#        return children[1].lower()
+        
+    def visit_chars(self, node, children):
+        return node.text
+
+    def visit_number(self, node, children):
+        return int(node.text)
+
+    def number_or_date(fn):  # @NoSelf
+        def _inner(self, node, children):
+            #print(children)
+            if not isinstance(children[0], int):
+                raise ParserEvalError('Applicable only to number, date or datetime: %s'% node.text, node.start)
+            return fn(self, node, children)
+        return _inner
+    
+    def binary(fn):  # @NoSelf
+        def _inner(self, node, children):
+            if isinstance(children[0], bool):
+                raise EvalError('Variable is boolean, should not be used here %s'% node.text, node.start)
+            return fn(self, node, children)
+        return _inner
+    
+    @binary
+    def visit_contains(self, node, children):
+        return children[0].find(children[-1]) > -1
+    
+    @binary
+    def visit_equals(self, node, children):
+        return children[0] == children[-1]
+   
+    @binary
+    def visit_starts(self, node, children):
+        return children[0].startswith(children[-1])
+    
+    @binary
+    def visit_ends(self, node, children):
+        return children[0].endswith(children[-1])
+
+    def visit_expr(self, node, children):
+        return children[1]
+    
+    def visit_or(self, node, children):
+        return children[0] or children[1] 
+    
+    def visit_more_or(self,node, children):
+        return any(children)
+    
+    def visit_and(self, node, children):
+        return children[0] and (True if children[1] is None else children[1])
+    
+    def visit_more_and(self, node, children):
+        return all(children)
+        
+    def visit_not(self, node, children):
+        return not children[-1]
+    
+    @binary
+    @number_or_date
+    def visit_smaller(self, node, children):
+        return children[0] < children[-1]
+
+    @binary
+    @number_or_date
+    def visit_bigger(self, node, children):
+        return children[0] > children[-1]
+
+    def visit_bracketed(self, node, children):
+        return children[2]
+    
+    def generic_visit(self, node, children):
+        if children:
+            return children[-1]
+
+
+
+
+
+def show_field(line, query):
+    lline = []
+    l = line.split()
+    if len(query) > 0:
+        a={}
+        for k in header:
+            if l[header[k]].isnumeric():
+                a[k] = int(l[header[k]])
+            else:
+                a[k] = l[header[k]]
+ 
+        parser=SimpleEvaluator(a)
+        result = parser.parse(query)
+        if not result:
+            return
+
+    if len(cols) > 0:
+        for i,c in enumerate(cols):
+            if c.isnumeric():
+                val = l[int(c)-1]
+                if colsize[i] < len(val):
+                    colsize[i] = len(val)
+                lline.append(val)
+ 
+                #print(l[int(c)-1], end=' ')
+            else:
+                val = l[header[c]]
+                if colsize[i] < len(val):
+                    colsize[i] = len(val)
+                lline.append(val)
+                #print(l[header[c]], end=' ')
+        output.append(lline)
+    else:
+        output.append(lline)
+    
+
+
+def main(query):
+    global cols
+    line = sys.stdin.readline()
+    while line:
+        if line.strip() == ('#'):
+            if not quiet:
+                cprint(line, 'grey', attrs=['bold'], end='')
+            line = sys.stdin.readline()
+            for i,v in enumerate(line.split()):
+                #v = v.lower()
+                header[v]=i
+                colsize.append(len(v))
+            if len(cols) == 0: # another workaround for a lack of thinking
+                cols = [str(a+1) for a in range(i)]
+            show_field(line, '')
+        elif line.startswith('# '): # ignore, even meta ones
+            if not quiet:
+                cprint(line, 'grey', attrs=['bold'], end='')
+        else:
+            show_field(line, query)
+        line = sys.stdin.readline()
+
+    for l,o in enumerate(output):
+        for i,val in enumerate(o):
+            if l == 0:
+                cprint("{0:{1}}".format(val, colsize[i]), 'white', end=' ')
+            else:
+                print("{0:{1}}".format(val, colsize[i]), end=' ')
+        print()
+
+
+def get_columns_and_query(arguments):
+    c = []
+    for i,v in enumerate(arguments):
+        #print(i,v)
+        if v in ('-w', 'where'):
+            return(c,' '.join(arguments[i+1:]))
+        else:
+            # kind of magic https://www.python.org/dev/peps/pep-0448/
+            c = [x for x in v.split(',') if x!='']
+    return(c, '')
+
+
+if __name__ == "__main__":
+    quiet, cols, arguments = get_and_set_options()
+    extracols, query = get_columns_and_query(arguments)
+    cols = [*cols, *extracols]
+    main(query)
