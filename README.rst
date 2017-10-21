@@ -190,7 +190,7 @@ Some examples:
     tmpfs      371560      36    
 
 
-Case-sensitibility for columns and literals:
+Case-insensitibility for columns and case-sensitible literals:
 
 .. code::
  
