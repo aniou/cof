@@ -14,7 +14,7 @@ NetBSD 8
 
 As root:
 
-  ::
+.. code:: 
   
     # pkg_add python36
     # pkg_add py36-pip
@@ -22,7 +22,7 @@ As root:
 
 As user:
 
- ::
+.. code:: 
  
     $ pip3.6 install --user parsimonious
     $ pip3.6 install --user termcolor
@@ -31,13 +31,19 @@ As user:
 Ubuntu 16.04
 ------------
 
+
+
 As root:
 
-    ``# apt-get install python3 python3-six python3-pip python3-termcolor``
+.. code::
+
+    # apt-get install python3 python3-six python3-pip python3-termcolor
 
 As user:
 
-    ``$ pip3 install parsimonius``
+.. code::
+
+    $ pip3 install parsimonius
 
 Then change shebang in ``sel`` to ``#!/usr/bin/python3 -tt``
 
@@ -50,7 +56,7 @@ flags, selectors, filters.
 Currently ``sel`` supports two different option sets as well as two 
 different filter grammars. 
 
- ::
+.. code::
  
    $ sel -h
    Usage(1): sel [-qh] [<column>, [<column>, ...]]    [where <filter>]
@@ -67,7 +73,7 @@ There are two forms of parameters - "dashless ones" are probably more
 suitable for passing arguments when filter is called from another app
 and parameters are passed via additional option, for example:
 
- ::
+.. code::
  
     df --of '1,2,Used'
 
@@ -84,7 +90,7 @@ Version1          Version2             Role
 
 Example:
 
-  ::
+.. code::
   
     $ df | sel 1,2,Used,Used where Used -eq 0
     # meta prog:/bin/df
@@ -96,16 +102,17 @@ Example:
 Filter grammar
 ==============
 
-There also two filter grammars.. Unfortunately, in shell environment 
+There also two filter grammars. Unfortunately, in shell environment 
 convenient  operators like ``<``, ``>``, ``>=``, ``(`` or ``)`` are
-cumbersome in use and may cause subtle bugs (especially when ``>``
- operator is used).
+cumbersome in use and may cause subtle bugs.
 
 There are some rules:
+
 - column names are always case-insensitive
+
 - literals are not quoted. That makes impossible to write someone 
   like comparison between two columns ``when Used -gt Free`` but is
-  a lot easier when we need a ``when Mouned -starts /opt``.
+  a lot easier when we need a ``when Mounted -starts /opt``.
 
 ===============   ==================   ================================
 Version1          Version2             meaning
@@ -137,7 +144,7 @@ Version1          Version2             meaning
 
 Some examples:
 
-  ::
+.. code::
 
     $ cat samples/df.txt | ./sel 1,2,3 where Used -gt 0 -a Filesystem -eq tmpfs
     # meta prog:/bin/df
@@ -160,7 +167,7 @@ Some examples:
 
 "Dashless" filter grammar:
 
-  ::
+.. code::
 
     $ export SEL_GRAMMAR=2
     $ cat samples/df.txt | ./sel 1,2,3 where Used gt 0 and Filesystem eq tmpfs
@@ -185,7 +192,7 @@ Some examples:
 
 Case-sensitibility for columns and literals:
 
- ::
+.. code::
  
     # cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq Tmpfs
     # meta prog:/bin/df
@@ -225,7 +232,7 @@ Case-sensitibility for columns and literals:
     
 More complicated example
 
-  ::
+.. code::
 
     $ cat sample/df.txt | ./sel -f 1,2,Used,Used,Mounted -w Used -gt 0 -a Mounted -starts /rr
     # meta prog:/bin/df
