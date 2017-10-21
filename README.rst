@@ -3,7 +3,7 @@ sel - simple administration tool
 ================================
 
 SEL is a technology demonstrator and kind of sketch-program, created for
-`Common Output Format project<https://github.com/aniou/cof/wiki/Draft>`_.
+Common Output Format project, see: <https://github.com/aniou/cof/wiki/Draft>.
 
 
 Installation instructions 
@@ -13,11 +13,17 @@ NetBSD 8
 --------
 
 As root:
+
+  ::
+  
     # pkg_add python36
     # pkg_add py36-pip
     # pkg_add py36-six 
 
 As user:
+
+ ::
+ 
     $ pip3.6 install --user parsimonious
     $ pip3.6 install --user termcolor
 
@@ -26,10 +32,12 @@ Ubuntu 16.04
 ------------
 
 As root:
-    # apt-get install python3 python3-six python3-pip python3-termcolor
+
+    ``# apt-get install python3 python3-six python3-pip python3-termcolor``
 
 As user:
-    $ pip3 install parsimonius
+
+    ``$ pip3 install parsimonius``
 
 Then change shebang in ``sel`` to ``#!/usr/bin/python3 -tt``
 
@@ -42,12 +50,14 @@ flags, selectors, filters.
 Currently ``sel`` supports two different option sets as well as two 
 different filter grammars. 
 
-    $ sel -h
-    Usage(1): sel [-qh] [<column>, [<column>, ...]]    [where <filter>]
-    Usage(2): sel [-qh] -f [<column>, [<column>, ...]] [-w <filter>]
+ ::
+ 
+   $ sel -h
+   Usage(1): sel [-qh] [<column>, [<column>, ...]]    [where <filter>]
+   Usage(2): sel [-qh] -f [<column>, [<column>, ...]] [-w <filter>]
 
-                  ^      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^
-                  flag   column selector               filter
+                 ^      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^
+                 flag   column selector               filter
 
 
 Parametrs
@@ -57,7 +67,9 @@ There are two forms of parameters - "dashless ones" are probably more
 suitable for passing arguments when filter is called from another app
 and parameters are passed via additional option, for example:
 
-  df --of '1,2,Used'
+ ::
+ 
+    df --of '1,2,Used'
 
 
 ===============   ==================   ================================
@@ -72,6 +84,8 @@ Version1          Version2             Role
 
 Example:
 
+  ::
+  
     $ df | sel 1,2,Used,Used where Used -eq 0
     # meta prog:/bin/df
     #
@@ -123,6 +137,8 @@ Version1          Version2             meaning
 
 Some examples:
 
+  ::
+
     $ cat samples/df.txt | ./sel 1,2,3 where Used -gt 0 -a Filesystem -eq tmpfs
     # meta prog:/bin/df
     #
@@ -143,6 +159,8 @@ Some examples:
 
 
 "Dashless" filter grammar:
+
+  ::
 
     $ export SEL_GRAMMAR=2
     $ cat samples/df.txt | ./sel 1,2,3 where Used gt 0 and Filesystem eq tmpfs
@@ -167,46 +185,48 @@ Some examples:
 
 Case-sensitibility for columns and literals:
 
-
-	$ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq Tmpfs
-	# meta prog:/bin/df
-	#
-	Filesystem 1024-blocks Used 
-
-	$ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and Filesystem eq tmpfs
-	# meta prog:/bin/df
-	#
-	Filesystem 1024-blocks Used  
-	tmpfs      371560      5956  
-	tmpfs      1857800     56916 
-	tmpfs      5120        4     
-	tmpfs      371560      36    
-
-
-	$ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq TMPFS
-	# meta prog:/bin/df
-	#
-	Filesystem 1024-blocks Used 
-
-
-	$ cat samples/df.txt | ./sel 1,2,3 where used gt 0,Filesystem eq tmpfs
-	# meta prog:/bin/df
-	#
-	Filesystem 1024-blocks Used 
-
-
-	$ cat samples/df.txt | ./sel 1,2,3 where used gt 0,Filesystem eq tmpfs
-	# meta prog:/bin/df
-	#
-	Filesystem 1024-blocks Used  
-	tmpfs      371560      5956  
-	tmpfs      1857800     56916 
-	tmpfs      5120        4     
-	tmpfs      371560      36    
-
-
+ ::
+ 
+    # cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq Tmpfs
+    # meta prog:/bin/df
+    #
+    Filesystem 1024-blocks Used 
+    
+    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and Filesystem eq tmpfs                  
+    # meta prog:/bin/df
+    #
+    Filesystem 1024-blocks Used  
+    tmpfs      371560      5956  
+    tmpfs      1857800     56916 
+    tmpfs      5120        4     
+    tmpfs      371560      36    
+    
+    
+    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq TMPFS
+    # meta prog:/bin/df
+    #
+    Filesystem 1024-blocks Used 
+    
+    
+    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0,Filesystem eq tmpfs
+    # meta prog:/bin/df
+    #
+    Filesystem 1024-blocks Used 
+    
+    
+    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0,Filesystem eq tmpfs
+    # meta prog:/bin/df
+    #
+    Filesystem 1024-blocks Used  
+    tmpfs      371560      5956  
+    tmpfs      1857800     56916 
+    tmpfs      5120        4     
+    tmpfs      371560      36    
+    
 More complicated example
-        
+
+  ::
+
     $ cat sample/df.txt | ./sel -f 1,2,Used,Used,Mounted -w Used -gt 0 -a Mounted -starts /rr
     # meta prog:/bin/df
     #
