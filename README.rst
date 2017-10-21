@@ -199,7 +199,7 @@ Case-insensitibility for columns and case-sensitible literals:
     #
     Filesystem 1024-blocks Used 
     
-    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and Filesystem eq tmpfs                  
+    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq tmpfs                  
     # meta prog:/bin/df
     #
     Filesystem 1024-blocks Used  
@@ -214,14 +214,8 @@ Case-insensitibility for columns and case-sensitible literals:
     #
     Filesystem 1024-blocks Used 
     
-    
-    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0,Filesystem eq tmpfs
-    # meta prog:/bin/df
-    #
-    Filesystem 1024-blocks Used 
-    
-    
-    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0,Filesystem eq tmpfs
+     
+    $ cat samples/df.txt | ./sel 1,2,3 where used gt 0,filesystem eq tmpfs
     # meta prog:/bin/df
     #
     Filesystem 1024-blocks Used  
