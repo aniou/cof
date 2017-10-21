@@ -1,6 +1,7 @@
-#!/usr/bin/python3 -tt
+#!/usr/pkg/bin/python3.6 -tt
 
 """
+#!/usr/bin/python3 -tt
 WARNING
 
 This is kind of sketch created for quick testing and prototyping.
@@ -105,10 +106,10 @@ if grammar == 1:
     bigger =  name space "-gt"  space numeric_literal
     smaller_equal =  name space "-le"  space numeric_literal
     bigger_equal =  name space "-ge"  space numeric_literal
-    name       = ~"[a-zA-Z\-_]+"
+    name       = ~"[a-zA-Z\-_]+"i
     numeric_literal = date / number
     any_literal = date / number / literal
-    literal    = ~"[a-zA-Z0-9/:]+"
+    literal    = ~"[a-zA-Z0-9/:_\-]+"
     number =  ~"\d+[kKmMgG%]?"
     date = ~"\d{4}-\d{1,2}-\d{1,2}(:?\ \d{1,4}:\d{1,2})?"
     space    = " "*
@@ -138,10 +139,10 @@ else:
     bigger =  name space "gt"  space numeric_literal
     smaller_equal =  name space "le"  space numeric_literal
     bigger_equal =  name space "ge"  space numeric_literal
-    name       = ~"[a-zA-Z\-_]+"
+    name       = ~"[a-zA-Z\-_]+"i
     numeric_literal = date / number
     any_literal = date / number / literal
-    literal    = ~"[a-zA-Z0-9/:]+"
+    literal    = ~"[a-zA-Z0-9/:_\-]+"
     number =  ~"\d+[kKmMgG%]?"
     date = ~"\d{4}-\d{1,2}-\d{1,2}(:?\ \d{1,4}:\d{1,2})?"
     space    = " "*
@@ -160,11 +161,13 @@ class SimpleEvaluator(parsimonious.NodeVisitor):
         self._strict=strict
     
     def visit_name(self, node, chidren):
-        if node.text in self._ctx :
-            val=self._ctx[node.text]
-            if isinstance(val, (six.string_types)+ (six.binary_type,)) :
-                #val = six.decode(val).lower()
-                val = val.lower()
+        if node.text.lower() in self._ctx :
+            val=self._ctx[node.text.lower()]
+            #print(node.text)
+            #if isinstance(val, (six.string_types)+ (six.binary_type,)) :
+            #    #val = six.decode(val).lower()
+            #    #print(val)
+            #    val = val.lower()
             return val
         elif self._strict:
             raise EvalError('Unknown variable %s'%node.text, node.start)
@@ -173,7 +176,8 @@ class SimpleEvaluator(parsimonious.NodeVisitor):
     
     def visit_literal(self,node, children):
 #        #return decode(children[1]).lower()
-        return node.text.lower()
+#        print(node.text.lower())
+        return node.text
 #        return children[1].lower()
         
     def visit_chars(self, node, children):
@@ -299,7 +303,7 @@ def main(query):
                 cprint(line, 'grey', attrs=['bold'], end='')
             line = sys.stdin.readline()
             for i,v in enumerate(line.split()):
-                #v = v.lower()
+                v = v.lower()
                 header[v]=i
                 colsize.append(len(v))
             if len(cols) == 0: # another workaround for a lack of thinking
