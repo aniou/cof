@@ -25,6 +25,7 @@ import os
 from termcolor import colored, cprint
 
 #
+grammar = int(os.getenv('SEL_GRAMMAR', '1'))
 quiet = False       # don't show headers nor comments
 header = {}         # maps headers to positions
 colsize = []        # column size (calculated from longest value)
@@ -37,16 +38,17 @@ ParserEvalError = parsimonious.exceptions.VisitationError
 
 def usage():
     name = os.path.basename(sys.argv[0])
-    print("Usage: {0} [-qh] [<column>, [<column>, ...]] [where <filter>]".format(name))
+    print("Usage(1): {0} [-qh] [<column>, [<column>, ...]] [where <filter>]".format(name))
+    print("Usage(2): {0} [-qh] -f [<column>, [<column>, ...]] [-w <filter>]".format(name))
     return
 
 # see http://docopt.org/
 # too many tricks to work over python deficiences in getopt/argv
 def get_and_set_options():
+    global quiet
     tmp_arg = ' '.join(sys.argv[1:]).replace(', ', ',')
     tmp = []
     cols = []
-    quiet = False
     #print(tmp_arg)
 
     try:
@@ -56,7 +58,6 @@ def get_and_set_options():
         usage()
         sys.exit(2)
     output = None
-    quiet = False
     #print(opts,':',args)
     for o, a in opts:
         #print(o,a)
@@ -77,38 +78,76 @@ def get_and_set_options():
         else:
             assert False, "unhandled option"
 
-    return(quiet, cols, tmp + args)
+    return(cols, tmp + args)
 
 
-##############################
-GRAMMAR=r""" # Test grammar
-expr = space or space
-or = and   more_or
-more_or = ( space "-o" space and )*
-and = term  more_and
-more_and = ( space "-a" space term )*
-term = not / value
-not = "NOT" space value
-value =  compare / bracketed / name
-bracketed = "[" space expr space "]"
-compare = contains / starts / ends / equals / smaller / smaller_equal/ bigger/ bigger_equal
-contains  =  name space "-has"  space literal
-starts  =  name space "-starts"  space literal
-ends  =  name space "-ends"  space literal
-equals =  name space "-eq"  space any_literal
-smaller =  name space "-lt"  space numeric_literal
-bigger =  name space "-gt"  space numeric_literal
-smaller_equal =  name space "-le"  space numeric_literal
-bigger_equal =  name space "-ge"  space numeric_literal
-name       = ~"[a-zA-Z\-_]+"
-numeric_literal = date / number
-any_literal = date / number / literal
-literal    = ~"[a-zA-Z0-9/:]+"
-number =  ~"\d+[kKmMgG%]?"
-date = ~"\d{4}-\d{1,2}-\d{1,2}(:?\ \d{1,4}:\d{1,2})?"
-space    = " "*
-chars = ~"[^\"]*"
-"""
+if grammar == 1:
+    ##############################
+    GRAMMAR=r""" # Test grammar
+    expr = space or space
+    or = and   more_or
+    more_or = ( space "-o" space and )*
+    and = term  more_and
+    more_and = ( space and0 space term )*
+    term = not / value
+    and1 = "-a"
+    and2 = ","
+    and0 = and1 / and2
+    not = "NOT" space value
+    value =  compare / bracketed / name
+    bracketed = "[" space expr space "]"
+    compare = contains / starts / ends / equals / smaller / smaller_equal/ bigger/ bigger_equal
+    contains  =  name space "-has"  space literal
+    starts  =  name space "-starts"  space literal
+    ends  =  name space "-ends"  space literal
+    equals =  name space "-eq"  space any_literal
+    smaller =  name space "-lt"  space numeric_literal
+    bigger =  name space "-gt"  space numeric_literal
+    smaller_equal =  name space "-le"  space numeric_literal
+    bigger_equal =  name space "-ge"  space numeric_literal
+    name       = ~"[a-zA-Z\-_]+"
+    numeric_literal = date / number
+    any_literal = date / number / literal
+    literal    = ~"[a-zA-Z0-9/:]+"
+    number =  ~"\d+[kKmMgG%]?"
+    date = ~"\d{4}-\d{1,2}-\d{1,2}(:?\ \d{1,4}:\d{1,2})?"
+    space    = " "*
+    chars = ~"[^\"]*"
+    """
+else:
+    ##############################
+    GRAMMAR=r""" # Test grammar
+    expr = space or space
+    or = and   more_or
+    more_or = ( space "or" space and )*
+    and = term  more_and
+    more_and = ( space and0 space term )*
+    term = not / value
+    and1 = "and"
+    and2 = ","
+    and0 = and1 / and2
+    not = "NOT" space value
+    value =  compare / bracketed / name
+    bracketed = "[" space expr space "]"
+    compare = contains / starts / ends / equals / smaller / smaller_equal/ bigger/ bigger_equal
+    contains  =  name space "has"  space literal
+    starts  =  name space "starts"  space literal
+    ends  =  name space "ends"  space literal
+    equals =  name space "eq"  space any_literal
+    smaller =  name space "lt"  space numeric_literal
+    bigger =  name space "gt"  space numeric_literal
+    smaller_equal =  name space "le"  space numeric_literal
+    bigger_equal =  name space "ge"  space numeric_literal
+    name       = ~"[a-zA-Z\-_]+"
+    numeric_literal = date / number
+    any_literal = date / number / literal
+    literal    = ~"[a-zA-Z0-9/:]+"
+    number =  ~"\d+[kKmMgG%]?"
+    date = ~"\d{4}-\d{1,2}-\d{1,2}(:?\ \d{1,4}:\d{1,2})?"
+    space    = " "*
+    chars = ~"[^\"]*"
+    """
+
 
 
 # cargo-culted from
@@ -252,6 +291,7 @@ def show_field(line, query):
 
 def main(query):
     global cols
+    global quiet
     line = sys.stdin.readline()
     while line:
         if line.strip() == ('#'):
@@ -273,6 +313,8 @@ def main(query):
         line = sys.stdin.readline()
 
     for l,o in enumerate(output):
+        if quiet and l == 0:
+            continue
         for i,val in enumerate(o):
             if l == 0:
                 cprint("{0:{1}}".format(val, colsize[i]), 'white', end=' ')
@@ -294,7 +336,7 @@ def get_columns_and_query(arguments):
 
 
 if __name__ == "__main__":
-    quiet, cols, arguments = get_and_set_options()
+    cols, arguments = get_and_set_options()
     extracols, query = get_columns_and_query(arguments)
     cols = [*cols, *extracols]
     main(query)
