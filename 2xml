@@ -1,0 +1,35 @@
+#!/usr/bin/awk -f
+
+# universal tabular-to-xml converter
+# requires meta-field 'prog:[progname]' as identifier
+
+BEGIN { head=0; opentag=0; prog="unknown" }
+
+/^#/  { 
+  for (i=1; i<=NF; i++) {
+    split($i,a,":")
+    if (a[1]=="prog")  { n=split(a[2],b,"/"); prog=b[n] }
+  }
+  next
+}
+
+opentag==0 { 
+  printf("<%s>\n", prog)
+  opentag=1
+}
+
+head==0  {
+    for (i=1; i<=NF; i++) { f[i] = $i }
+    head=1
+    next
+} 
+
+{
+  printf("  <element>\n")
+  for (i=1; i<=NF; i++) { printf("    <%s>%s</%s>\n", f[i], $i, f[i]) }
+  printf("  </element>\n")
+}
+
+END   { printf("</%s>\n", prog) }
+
+# eof
