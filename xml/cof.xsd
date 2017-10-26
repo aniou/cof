@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-
-
 <xs:element name="Capacity">
   <xs:simpleType>
     <xs:restriction base="xs:integer">
@@ -12,21 +10,18 @@
   </xs:simpleType>
 </xs:element> 
 
-
-
-
 <xs:element name="df_list">
   <xs:complexType>
   <xs:sequence>
 	<xs:element name="df_entry" maxOccurs="unbounded">
 	  <xs:complexType>
 		<xs:sequence>
-		  <xs:element name="Filesystem" type="xs:string"/>
-		  <xs:element name="Blocks" type="xs:int"/>
-		  <xs:element name="Used" type="xs:int"/>
-		  <xs:element name="Available" type="xs:int"/>
+		  <xs:element name="Filesystem"  type="xs:string"/>
+		  <xs:element name="Blocks_1024" type="xs:int"/>
+		  <xs:element name="Used"        type="xs:int"/>
+		  <xs:element name="Available"   type="xs:int"/>
 		  <xs:element ref="Capacity"/>
-		  <xs:element name="Mounted" type="xs:string"/>
+		  <xs:element name="Mounted"     type="xs:string"/>
 		</xs:sequence>
 	  </xs:complexType>
 	</xs:element>

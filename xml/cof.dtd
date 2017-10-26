@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!ELEMENT df_list    (df_entry)*>
-<!ELEMENT df_entry   (Filesystem, Blocks, Used, Available, Capacity, Mounted)>
-<!ELEMENT Filesystem (#PCDATA)>
-<!ELEMENT Blocks     (#PCDATA)>
-<!ELEMENT Used       (#PCDATA)>
-<!ELEMENT Available  (#PCDATA)>
-<!ELEMENT Capacity   (#PCDATA)>
-<!ELEMENT Mounted    (#PCDATA)>
+<!ELEMENT df_list     (df_entry)*>
+<!ELEMENT df_entry    (Filesystem, Blocks, Used, Available, Capacity, Mounted)>
+<!ELEMENT Filesystem  (#PCDATA)>
+<!ELEMENT Blocks_1024 (#PCDATA)>
+<!ELEMENT Used        (#PCDATA)>
+<!ELEMENT Available   (#PCDATA)>
+<!ELEMENT Capacity    (#PCDATA)>
+<!ELEMENT Mounted     (#PCDATA)>
