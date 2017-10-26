@@ -1,9 +1,11 @@
 #!/usr/bin/awk -f
 
 # universal tabular-to-xml converter
-# requires meta-field 'prog:[progname]' as identifier
+# requires meta-field 'prog:[progname]' 
 
-BEGIN { head=0; opentag=0; prog="unknown" }
+BEGIN { 
+    head=0; opentag=0; prog="unknown" 
+}
 
 /^#/  { 
   for (i=1; i<=NF; i++) {
@@ -14,7 +16,10 @@ BEGIN { head=0; opentag=0; prog="unknown" }
 }
 
 opentag==0 { 
-  printf("<%s>\n", prog)
+  printf("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n")
+  printf("<!DOCTYPE %s_list SYSTEM \"cof.dtd\">\n", prog )
+
+  printf("<%s_list>\n", prog)
   opentag=1
 }
 
@@ -25,11 +30,19 @@ head==0  {
 } 
 
 {
-  printf("  <element>\n")
-  for (i=1; i<=NF; i++) { printf("    <%s>%s</%s>\n", f[i], $i, f[i]) }
-  printf("  </element>\n")
+  printf("  <%s_entry>\n", prog)
+  for (i=1; i<=NF; i++) { 
+    gsub("\"","\\&quot;", $i) 
+    gsub("'", "\\&apos;", $i) 
+    gsub("&", "\\&amp;",  $i) 
+    gsub("<", "\\&lt;",   $i) 
+    gsub(">", "\\&gt;",   $i)
+    printf("    <%s>%s</%s>\n", f[i], $i, f[i]) 
+  }
+  printf("  </%s_entry>\n", prog)
 }
 
-END   { printf("</%s>\n", prog) }
+END   { printf("</%s_list>\n", prog) }
 
 # eof
+
