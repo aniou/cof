@@ -243,6 +243,6 @@ Conversion to other formats
 
 Tabular data can be converted to other format with standard utilities
 and only few lines of code. For more examples take a look at 
-`xml <https://github.com/aniou/cof/xml>`_ directory.
+`xml <https://github.com/aniou/cof/tree/master/xml>`_ directory.
 
 
