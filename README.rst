@@ -242,54 +242,7 @@ Conversion to other formats
 ===========================
 
 Tabular data can be converted to other format with standard utilities
-and only few lines of code. `2xml <https://github.com/aniou/cof/blob/master/2xml>`_ 
-(linux-only) has only 23 lines - but it is very naive script. For example: it doesn't 
-deal with  special  characters, like ``<`` or ``>`` at all.
+and only few lines of code. For more examples take a look at 
+`xml <https://github.com/aniou/cof/xml`_ directory.
 
-.. code::
-
-	$ cat samples/df.txt | ./2xml 
-	<df>
-	  <element>
-		<Filesystem>udev</Filesystem>
-		<1024-blocks>1837416</1024-blocks>
-		<Used>0</Used>
-		<Available>1837416</Available>
-		<Capacity>0</Capacity>
-		<Mounted>/dev</Mounted>
-	  </element>
-	  <element>
-		<Filesystem>tmpfs</Filesystem>
-		<1024-blocks>371560</1024-blocks>
-		<Used>5956</Used>
-		<Available>365604</Available>
-		<Capacity>2</Capacity>
-		<Mounted>/run</Mounted>
-	  </element>
-	  ...
-	</df>
-
-For comparison, libxo output:
-
-.. code::
-
-	$ df --libxo='pretty,xml'
-	<storage-system-information>
-	  <filesystem>
-		<name>/dev/gpt/rootfs</name>
-		<total-blocks>20307196</total-blocks>
-		<used-blocks>1449628</used-blocks>
-		<available-blocks>17232996</available-blocks>
-		<used-percent>8</used-percent>
-		<mounted-on>/</mounted-on>
-	  </filesystem>
-	  <filesystem>
-		<name>devfs</name>
-		<total-blocks>1</total-blocks>
-		<used-blocks>1</used-blocks>
-		<available-blocks>0</available-blocks>
-		<used-percent>100</used-percent>
-		<mounted-on>/dev</mounted-on>
-	  </filesystem>
-	</storage-system-information>
 
