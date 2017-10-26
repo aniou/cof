@@ -242,7 +242,9 @@ Conversion to other formats
 ===========================
 
 Tabular data can be converted to other format with standard utilities
-and only few lines of code. `2xml <https://github.com/aniou/cof/blob/master/2xml>`_ has only 23 lines.
+and only few lines of code. `2xml <https://github.com/aniou/cof/blob/master/2xml>`_ 
+(linux-only) has only 23 lines - but it is very naive script. For example: it doesn't 
+deal with  special  characters, like ``<`` or ``>`` at all.
 
 .. code::
 
