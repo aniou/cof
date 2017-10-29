@@ -93,7 +93,7 @@ Example:
 .. code::
   
     $ df | sel 1,2,Used,Used where Used -eq 0
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used Used      
     udev       1837416     0    0         
@@ -147,7 +147,7 @@ Some examples:
 .. code::
 
     $ cat samples/df.txt | ./sel 1,2,3 where Used -gt 0 -a Filesystem -eq tmpfs
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used  
     tmpfs      371560      5956  
@@ -156,7 +156,7 @@ Some examples:
     tmpfs      371560      36    
 
     $ cat samples/df.txt | ./sel 1,2,3 where Used -gt 0, Filesystem -eq tmpfs
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used  
     tmpfs      371560      5956  
@@ -171,7 +171,7 @@ Some examples:
 
     $ export SEL_GRAMMAR=2
     $ cat samples/df.txt | ./sel 1,2,3 where Used gt 0 and Filesystem eq tmpfs
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used  
     tmpfs      371560      5956  
@@ -181,7 +181,7 @@ Some examples:
 
 
     $ cat samples/df.txt | ./sel 1,2,3 where Used gt 0, Filesystem eq tmpfs
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used  
     tmpfs      371560      5956  
@@ -195,12 +195,12 @@ Case-insensitibility for columns and case-sensitible literals:
 .. code::
  
     # cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq Tmpfs
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used 
     
     $ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq tmpfs                  
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used  
     tmpfs      371560      5956  
@@ -210,13 +210,13 @@ Case-insensitibility for columns and case-sensitible literals:
     
     
     $ cat samples/df.txt | ./sel 1,2,3 where used gt 0 and filesystem eq TMPFS
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used 
     
      
     $ cat samples/df.txt | ./sel 1,2,3 where used gt 0,filesystem eq tmpfs
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem 1024-blocks Used  
     tmpfs      371560      5956  
@@ -229,7 +229,7 @@ More complicated example
 .. code::
 
     $ cat sample/df.txt | ./sel -f 1,2,Used,Used,Mounted -w Used -gt 0 -a Mounted -starts /rr
-    # meta prog:/bin/df
+    # meta prog:df
     #
     Filesystem             1024-blocks Used      Used      Mounted   
     /dev/sdx2              123723748   10807024  10807024  /rr/rrr   
