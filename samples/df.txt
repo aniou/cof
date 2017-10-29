@@ -1,4 +1,4 @@
-# meta prog:/bin/df 
+# meta prog:df 
 #
 Filesystem                    Blocks_1024      Used Available Capacity Mounted
 udev                              1837416         0   1837416        0 /dev

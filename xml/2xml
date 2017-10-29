@@ -4,29 +4,28 @@
 # requires meta-field 'prog:[progname]' 
 
 BEGIN { 
-    head=0; opentag=0; prog="unknown" 
+  head=0; 
+  prog="unknown" 
+  printf("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n")
+  printf("<cof\n  xmlns=\"http://smutek.pl/cof\"\n  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n  xsi:schemaLocation=\"http://smutek.pl.cof cof.xsd\">\n");
 }
 
 /^#/  { 
-  for (i=1; i<=NF; i++) {
-    split($i,a,":")
-    if (a[1]=="prog")  { n=split(a[2],b,"/"); prog=b[n] }
+  if ( $2 == "meta") {
+    for (i=1; i<=NF; i++) {
+      split($i,a,":")
+      if (a[1]=="prog")  { prog=a[2] }
+    }
   }
+  head = 0  # any 'comment' field resets header marker
   next
 }
 
-opentag==0 { 
-  printf("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n")
-  printf("<!DOCTYPE %s_list SYSTEM \"cof.dtd\">\n", prog )
-
-  printf("<%s_list>\n", prog)
-  opentag=1
-}
-
 head==0  {
-    for (i=1; i<=NF; i++) { f[i] = $i }
-    head=1
-    next
+  delete f
+  for (i=1; i<=NF; i++) { f[i] = $i }
+  head=1
+  next
 } 
 
 {
@@ -42,7 +41,7 @@ head==0  {
   printf("  </%s_entry>\n", prog)
 }
 
-END   { printf("</%s_list>\n", prog) }
+END   { printf("</cof>\n") }
 
 # eof
 
