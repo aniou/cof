@@ -3,7 +3,8 @@ sel - simple administration tool
 ================================
 
 SEL is a technology demonstrator and kind of sketch-program, created for
-Common Output Format project, see: <https://github.com/aniou/cof/wiki/Draft>.
+`Common Output Format project <https://github.com/aniou/cof/wiki/Draft>`_.
+If you want something production-ready - check `Miller <http://johnkerl.org/miller/doc/index.html>`_.
 
 
 Installation instructions 
